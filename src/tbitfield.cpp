@@ -38,16 +38,13 @@ TBitField::~TBitField()
 int TBitField::GetMemIndex(const int n) const // индекс Мем для бита n
 {
     if (n < 0 || n >= BitLen) throw - 1;
-    if (sizeof(TELEM) == 1) return n >> 3;
-    if (sizeof(TELEM) == 2) return n >> 4;
-    if (sizeof(TELEM) == 4) return n >> 5;
-    if (sizeof(TELEM) == 8) return n >> 6;
+    return n >> 5;
 }
 
 TELEM TBitField::GetMemMask(const int n) const // битовая маска для бита n
 {
     if (n < 0 || n >= BitLen) throw - 1;
-    return 1 << (n % (sizeof(TELEM) * 8));
+    return 1 << (n % (sizeof(TELEM) * 8)); 
 }
 
 // доступ к битам битового поля
@@ -59,9 +56,9 @@ int TBitField::GetLength(void) const // получить длину (к-во б�
 
 void TBitField::SetBit(const int n) // установить бит
 {
-    if ((n < 0) || (n > BitLen)) throw - 1;
-    int ind = GetMemIndex(n);
-    TELEM mask = GetMemMask(n);
+    if ((n < 0) || (n >= BitLen)) throw - 1;
+    int ind = GetMemIndex(n); // в какой элемент установить
+    TELEM mask = GetMemMask(n); // на какую позицию в этом эл-те
     pMem[ind] |= mask;
 }
 
@@ -99,9 +96,9 @@ TBitField& TBitField::operator=(const TBitField &bf) // присваивание
 
 int TBitField::operator==(const TBitField &bf) const // сравнение
 {
-    if (this->BitLen != bf.BitLen) return false;
+    if (BitLen != bf.BitLen) return false;
     for (int i = 0; i < MemLen; i++) {
-        if (this->pMem[i] != bf.pMem[i])
+        if (pMem[i] != bf.pMem[i])
             return false;
     }
     return true;
@@ -109,9 +106,9 @@ int TBitField::operator==(const TBitField &bf) const // сравнение
 
 int TBitField::operator!=(const TBitField &bf) const // сравнение
 {
-    if (this->BitLen != bf.BitLen) return true;
+    if (BitLen != bf.BitLen) return true;
     for (int i = 0; i < MemLen; i++) {
-        if (this->pMem[i] != bf.pMem[i])
+        if (pMem[i] != bf.pMem[i])
             return true;
     }
     return false;
